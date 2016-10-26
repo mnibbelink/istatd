@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -xe
-folder_name='istatd-server'
+folder_name='collectd-istatd'
 
 # ensure we don't bomb out later
 test ! -d sandbox
@@ -9,28 +9,28 @@ test ! -d sandbox
 export PATH=/opt/ruby/2.0/bin:$PATH
 version=$(git describe --tags)
 
-export DEPENDS="libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 libc6 libgcc1 libstdc++6"
+export ROOT_DIR=`pwd`
+export DEPENDS="collectd"
 
+test -d src/collectd || mkdir -p src/collectd
+pushd src/collectd
+test -f collectd-4.10.9.tar.gz || curl -o collectd-4.10.9.tar.gz https://collectd.org/files/collectd-4.10.9.tar.gz
+tar zxvf collectd-4.10.9.tar.gz
+cd collectd-4.10.9
 ./configure
+popd
+
+pushd contrib/collectd
+export CFLAGS="-I $ROOT_DIR/src/collectd/collectd-4.10.9/src"
 make
+popd
 
 mkdir sandbox
 cd sandbox
 
-mkdir -p etc
-mkdir -p etc/default
-mkdir -p etc/init.d
-mkdir -p usr/bin
-mkdir -p usr/share/doc/istatd-server
+mkdir -p usr/lib/collectd
 
-cp ../istatd-server.default etc/default/istatd-server
-cp ../istatd-server-init.sh etc/init.d/istatd-server
-cp ../istatd-server.settings etc/istatd-server.cfg
-cp ../bin/istatd usr/bin/istatd-server
-cp ../README.md usr/share/doc/istatd-server
-gzip usr/share/doc/istatd-server/README.md
-
-chmod +x usr/bin/istatd-server
+cp ../contrib/collectd/plugins/istatd.so usr/lib/collectd
 
 ### Build the package
 
