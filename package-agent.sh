@@ -3,7 +3,7 @@
 set -xe
 folder_name='istatd-agent'
 
-export PATH=/opt/python/2.7/bin:$PATH
+export PATH=/opt/ruby/2.0/bin:$PATH
 version=$(git describe --tags)
 
 export DEPENDS="libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 libc6 libgcc1 libstdc++6"
