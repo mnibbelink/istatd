@@ -1,1 +1,125 @@
-{"type_mapping":{"0":"gauge","1":"counter","2":"aggregate"},"pattern":"*","matching_names":[{"is_leaf":false,"type":2,"name":"istatd"},{"is_leaf":true,"type":0,"name":"foo.bar"},{"is_leaf":true,"type":1,"name":"istatd.http.errors.http"},{"is_leaf":false,"type":2,"name":"ice"},{"is_leaf":true,"type":1,"name":"istatd.http.requests"},{"is_leaf":true,"type":1,"name":"istatd.counter.enqueue"},{"is_leaf":true,"type":0,"name":"istatd.counter.eagerconns"},{"is_leaf":true,"type":1,"name":"istatd.counter.dequeue"},{"is_leaf":true,"type":1,"name":"istatd.statserver.connects"},{"is_leaf":false,"type":2,"name":"istatd.http.errors"},{"is_leaf":false,"type":2,"name":"istatd.http"},{"is_leaf":true,"type":0,"name":"istatd.counter.queuelen"},{"is_leaf":false,"type":2,"name":"maybe"},{"is_leaf":false,"type":2,"name":"istatd.statserver"},{"is_leaf":false,"type":2,"name":"istatd.counter"},{"is_leaf":true,"type":1,"name":"istatd.counter.created"},{"is_leaf":true,"type":0,"name":"maybe.gauge"},{"is_leaf":false,"type":2,"name":"foo"},{"is_leaf":true,"type":0,"name":"ice.cream.bar"},{"is_leaf":false,"type":2,"name":"ice.cream"},{"is_leaf":true,"type":1,"name":"istatd.statserver.drops"},{"is_leaf":true,"type":0,"name":"istatd.http.current"},{"is_leaf":true,"type":1,"name":"maybe.counter"}]}
+{
+    "matching_names": [
+        {
+            "is_leaf": false,
+            "name": "foo",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "foo.bar",
+            "type": 0
+        },
+        {
+            "is_leaf": false,
+            "name": "ice",
+            "type": 2
+        },
+        {
+            "is_leaf": false,
+            "name": "ice.cream",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "ice.cream.bar",
+            "type": 0
+        },
+        {
+            "is_leaf": false,
+            "name": "istatd",
+            "type": 2
+        },
+        {
+            "is_leaf": false,
+            "name": "istatd.counter",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.counter.created",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.counter.dequeue",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.counter.eagerconns",
+            "type": 0
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.counter.enqueue",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.counter.queuelen",
+            "type": 0
+        },
+        {
+            "is_leaf": false,
+            "name": "istatd.http",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.http.current",
+            "type": 0
+        },
+        {
+            "is_leaf": false,
+            "name": "istatd.http.errors",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.http.errors.http",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.http.requests",
+            "type": 1
+        },
+        {
+            "is_leaf": false,
+            "name": "istatd.statserver",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.statserver.connects",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "istatd.statserver.drops",
+            "type": 1
+        },
+        {
+            "is_leaf": false,
+            "name": "maybe",
+            "type": 2
+        },
+        {
+            "is_leaf": true,
+            "name": "maybe.counter",
+            "type": 1
+        },
+        {
+            "is_leaf": true,
+            "name": "maybe.gauge",
+            "type": 0
+        }
+    ],
+    "pattern": "*",
+    "type_mapping": {
+        "0": "gauge",
+        "1": "counter",
+        "2": "aggregate"
+    }
+}

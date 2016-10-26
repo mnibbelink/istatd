@@ -116,8 +116,9 @@ http_post_json "http://localhost:18011/*" '{"start":1001,"stop":1598,"maxSamples
 assert_expected $TEST_OUT
 
 test_name GET_counter_list_returns_counter_type
-curl -s "http://localhost:18011/?q=*" > $TEST_OUT
-assert_expected $TEST_OUT
+curl -s "http://localhost:18011/?q=*" | jq '.matching_names|=sort_by(.name)' | python -m json.tool > $TEST_OUT
+# allow whitespace deltas
+assert_expected $TEST_OUT "-w"
 
 test_name OPTIONS_returns_204
 http_options "http://localhost:18011/*" > $TEST_OUT
@@ -133,10 +134,5 @@ assert_expected $TEST_OUT
 
 kill_server single
 start_server single --fake-time 2600
-
-test_name GET_counter_list_returns_counter_type
-curl -s "http://localhost:18011/?q=*" > $TEST_OUT
-assert_expected $TEST_OUT
-
 
 cleanup_test

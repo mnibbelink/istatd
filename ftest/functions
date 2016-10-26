@@ -331,7 +331,7 @@ function check_get_zlib {
     curl -s -H "Accept-encoding: deflate" "http://localhost:$PORT/$QUERY" > "$OUTFILE"
     while [ "$#" -ne "0" ]; do
         NAME="$1"; shift
-        if cat "$OUTFILE" | zlib-flate -uncompress | grep "$NAME" > /dev/null; then
+        if cat "$OUTFILE" | pigz -d -z - | grep "$NAME" > /dev/null; then
             true
         else
             failure "Did not find pattern $NAME on port $PORT (see $OUTFILE)"
@@ -354,7 +354,7 @@ function check_post_zlib {
     curl -s -H "Accept-encoding: deflate" -d "$DATA" "http://localhost:$PORT/$QUERY" > "$OUTFILE"
     while [ "$#" -ne "0" ]; do
         NAME="$1"; shift
-        if cat "$OUTFILE" | zlib-flate -uncompress | grep "$NAME" > /dev/null; then
+        if cat "$OUTFILE" | pigz -d -z - | grep "$NAME" > /dev/null; then
             true
         else
             failure "Did not find pattern $NAME on port $PORT (see $OUTFILE)"
@@ -520,8 +520,13 @@ function check_counters {
 function assert_files_equal {
     FILE1=$1
     FILE2=$2
+    if [ $# -eq 3 ] ; then
+	DIFF_ARGS=$3
+    else
+	DIFF_ARGS=""
+    fi
     TMPF=/var/tmp/assert_file_equal_$$.txt
-    if ! diff $FILE1 $FILE2 > $TMPF 2>&1 ; then
+    if ! diff $DIFF_ARGS $FILE1 $FILE2 > $TMPF 2>&1 ; then
         echo "FAILURE: $TEST_NAME"
         echo "test_output < $FILE1"
         echo "test_expect > $FILE2"
@@ -534,10 +539,15 @@ function assert_files_equal {
 
 function assert_expected {
     RESULT_F=$1
+    if [ $# -eq 2 ] ; then
+	DIFF_ARGS="$2"
+    else 
+	DIFF_ARGS=""
+    fi
     EXPECT_F=ftest/expected/$FTEST_NAME/$TEST_NAME
     [ -d ftest/expected ] || failure "dir does not exist: ftest/expected"
     [ -d ftest/expected/$FTEST_NAME ] || failure "dir does not exist: ftest/expected/$FTEST_NAME"
-    assert_files_equal $RESULT_F $EXPECT_F
+    assert_files_equal $RESULT_F $EXPECT_F $DIFF_ARGS
 }
 
 TEST_NUM=0
