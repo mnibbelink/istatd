@@ -20,9 +20,15 @@ if curl --help >/dev/null 2>&1; then echo "Found curl in path."; else
     exit 1
 fi
 
-if cat /dev/null | zlib-flate -compress; then echo "Found zlib-flate in path."; else
-    echo "You need to install the command-line tool 'zlib-flate'."
-    echo "On debian systems run 'sudo apt-get install qpdf'"
+if jq '' < /dev/null 2>&1; then echo "Found jq in path."; else
+    echo "You need to install the command-line tool 'jq'."
+    echo "On debian systems run 'sudo apt-get install jq'"
+    exit 1
+fi
+
+if cat /dev/null | pigz -c > /dev/null; then echo "Found pigz in path."; else
+    echo "You need to install the command-line tool 'pigz'."
+    echo "On debian systems run 'sudo apt-get install pigz'"
     exit 1
 fi
 
