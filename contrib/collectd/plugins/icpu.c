@@ -4,7 +4,7 @@
 #include <plugin.h>
 
 #include <statgrab.h>
-#include "config.h"
+#include "../config.h"
 
 #define ICPU_PLUGIN_NAME "icpu"
 
