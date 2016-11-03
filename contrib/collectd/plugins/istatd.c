@@ -28,6 +28,7 @@
  * CSV plugin.
  */
 #include <collectd.h>
+#include <liboconfig/oconfig.h>
 #include <plugin.h>
 #include <common.h>
 #include <utils_cache.h>

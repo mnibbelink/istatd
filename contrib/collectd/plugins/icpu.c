@@ -1,5 +1,6 @@
 /* mostly lifted from collectd's cpu.c */
 #include <collectd.h>
+#include <liboconfig/oconfig.h>
 #include <common.h>
 #include <plugin.h>
 
