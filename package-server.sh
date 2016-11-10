@@ -60,3 +60,5 @@ cd ..
 # else
 #     sudo reprepro -Vb /var/repo/ includedeb $(lsb_release -cs) *.deb
 # fi
+
+rm -rf sandbox
