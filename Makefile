@@ -46,6 +46,11 @@ SYS_LIBS:=$(BOOST_SYSTEM) $(BOOST_THREAD) -lboost_signals -lpthread $(STATGRAB) 
 
 all:	$(DIR_DEPS) $(LIB_DEPS) $(BINS) tests ftests
 
+config: config.h
+
+config.h: configure
+	bash configure
+
 dpkg:
 	env DEB_BUILD_OPTIONS="nostrip" debuild -us -uc   
 	@echo done
