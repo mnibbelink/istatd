@@ -59,7 +59,7 @@ build:	$(DIR_DEPS) $(BINS)
 	@echo "build done"
 
 clean:
-	rm -fr obj bin testdata/* /tmp/test /var/tmp/test /tmp/ss.test
+	rm -fr obj bin testdata/* /tmp/test /var/tmp/test /tmp/ss.test .ftests_complete
 
 distclean:	clean
 	rm -fr makevars.config debian/files debian/istatd/
@@ -98,9 +98,12 @@ tests:	$(DIR_DEPS) $(patsubst %,run_%,$(TESTS_TO_RUN))
 	@echo "tests complete"
 
 # ftests require istatd to be built
-ftests: $(DIR_DEPS) $(BINS) tests $(FTEST_FILES)
+ftests: .ftests_complete
+
+.ftests_complete: $(DIR_DEPS) $(BINS) $(FTEST_FILES)
 	@for ft in $(FTEST_FILES); do echo ""; echo "============================================"; echo "ftest $$ft"; $$ft || exit 1; done
 	bin/istatd --test --config test.cfg
+	touch .ftests_complete
 	@echo "ftests complete"
 
 -include $(DEPS)
