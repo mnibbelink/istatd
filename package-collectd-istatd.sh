@@ -25,7 +25,7 @@ else
     cd collectd-4.10.9
     ./configure
     popd
-    export CFLAGS="-I $ROOT_DIR/src/collectd/collectd-4.10.9/src"
+    export CFLAGS="-I \"$ROOT_DIR/src/collectd/collectd-4.10.9/src\""
 fi
 
 pushd contrib/collectd
