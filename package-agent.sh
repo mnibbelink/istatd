@@ -4,7 +4,9 @@ set -xe
 folder_name='istatd-agent'
 
 # ensure we don't bomb out later
-test ! -d sandbox
+if [ -d sandbox ] ; then
+   rm -rf sandbox
+fi
 
 # only use optional ruby if system ruby is super old
 if ruby --version | grep ruby.1.8 ; then 
