@@ -47,7 +47,8 @@ fi
 
 if [[ -e "/etc/redhat-release" ]]; then
     target=rpm
-    iter="${iter}.el6"
+    majver=$(lsb_release -rs | cut -f1 -d\. )
+    iter="${iter}.el${majver}"
 else
     target=deb
 fi
