@@ -6,7 +6,10 @@ folder_name='collectd-istatd'
 # ensure we don't bomb out later
 test ! -d sandbox
 
-export PATH=/opt/ruby/2.0/bin:$PATH
+# only use optional ruby if system ruby is super old
+if ruby --version | grep ruby.1.8 ; then 
+   export PATH=/opt/ruby/2.0/bin:$PATH
+fi
 version=$(git describe --tags)
 
 export ROOT_DIR=`pwd`
