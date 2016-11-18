@@ -14,7 +14,11 @@ if ruby --version | grep ruby.1.8 ; then
 fi
 version=$(git describe --tags)
 
-export DEPENDS="libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 libc6 libgcc1 libstdc++6"
+if [[ -e "/etc/redhat-release" ]]; then
+   export DEPENDS="boost-filesystem boost-iostreams boost-system boost-thread glibc libgcc libstdc++"
+else
+   export DEPENDS="libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 libc6 libgcc1 libstdc++6"
+fi
 
 make config
 make
