@@ -44,6 +44,10 @@
 
 #define ISTATD_PLUGIN_DEBUG 0
 
+#ifndef CDTIME_T_TO_DOUBLE
+#  define CDTIME_T_TO_DOUBLE(t) (((double) (t)) / 1073741824.0)
+#endif
+
 /*
  * Private variables
  */
