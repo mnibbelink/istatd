@@ -15,7 +15,7 @@ fi
 version=$(git describe --tags | sed -e "s/^v//")
 
 if [[ -e "/etc/redhat-release" ]]; then
-   export DEPENDS="boost-filesystem boost-iostreams boost-system boost-thread glibc libgcc libstdc++"
+   export DEPENDS="boost-date-time boost-filesystem boost-iostreams boost-signals boost-system boost-thread glibc libgcc libstatgrab libstdc++"
 else
    export DEPENDS="libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 libc6 libgcc1 libstdc++6"
 fi
