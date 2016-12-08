@@ -85,8 +85,10 @@ stop_istatd() {
 status_istatd() {
   if is_istatd_running ; then
      echo $NAME is running
+     exit 0
   else
      echo $NAME is stopped
+     exit 3
   fi
 }
     
