@@ -17,6 +17,12 @@ version=$(git describe --tags)
 export ROOT_DIR=`pwd`
 export DEPENDS="collectd"
 
+if [[ -e "/etc/redhat-release" ]]; then
+    plugin_dir=usr/lib64/collectd
+else
+    plugin_dir=usr/lib/collectd
+fi
+
 if lsb_release -d | grep Ubuntu ; then
     if ! dpkg -s collectd-dev > /dev/null ; then
 	echo Please ensure collectd-dev is installed
@@ -25,12 +31,12 @@ if lsb_release -d | grep Ubuntu ; then
 else
     test -d src/collectd || mkdir -p src/collectd
     pushd src/collectd
-    test -f collectd-4.10.9.tar.gz || curl -o collectd-4.10.9.tar.gz https://collectd.org/files/collectd-4.10.9.tar.gz
-    tar zxvf collectd-4.10.9.tar.gz
-    cd collectd-4.10.9
+    test -f collectd-5.5.0.tar.gz || curl -o collectd-5.5.0.tar.gz https://collectd.org/files/collectd-5.5.0.tar.gz
+    tar zxvf collectd-5.5.0.tar.gz
+    cd collectd-5.5.0
     ./configure
     popd
-    export CFLAGS="-I \"$ROOT_DIR/src/collectd/collectd-4.10.9/src\""
+    export CFLAGS="-I \"$ROOT_DIR/src/collectd/collectd-5.5.0/src/daemon\" -I \"$ROOT_DIR/src/collectd/collectd-5.5.0/src\""
 fi
 
 pushd contrib/collectd
@@ -40,9 +46,9 @@ popd
 mkdir sandbox
 cd sandbox
 
-mkdir -p usr/lib/collectd
+mkdir -p $plugin_dir
 
-cp ../contrib/collectd/plugins/istatd.so usr/lib/collectd
+cp ../contrib/collectd/plugins/istatd.so $plugin_dir
 
 ### Build the package
 
