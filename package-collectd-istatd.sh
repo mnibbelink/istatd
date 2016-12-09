@@ -29,14 +29,21 @@ if lsb_release -d | grep Ubuntu ; then
 	exit 1
     fi
 else
+    if lsb_release -r | grep -E "\s6\." ; then
+	collectd_version=collectd-5.5.0
+    else
+	collectd_version=collectd-5.6.0
+    fi
     test -d src/collectd || mkdir -p src/collectd
     pushd src/collectd
-    test -f collectd-5.5.0.tar.gz || curl -o collectd-5.5.0.tar.gz https://collectd.org/files/collectd-5.5.0.tar.gz
-    tar zxvf collectd-5.5.0.tar.gz
-    cd collectd-5.5.0
+    test -f ${collectd_version}.tar.bz2 || curl -o ${collectd_version}.tar.bz2 https://collectd.org/files/${collect_version}.tar.bz2
+    if [ ! -d ${collectd_version} ] ; then
+       tar -jxvf ${collectd_version}.tar.bz2
+    fi
+    cd ${collectd_version}
     ./configure
     popd
-    export CFLAGS="-I \"$ROOT_DIR/src/collectd/collectd-5.5.0/src/daemon\" -I \"$ROOT_DIR/src/collectd/collectd-5.5.0/src\""
+    export CFLAGS="-I \"$ROOT_DIR/src/collectd/${collectd_version}/src/daemon\" -I \"$ROOT_DIR/src/collectd/${collectd_version}/src\""
 fi
 
 pushd contrib/collectd
