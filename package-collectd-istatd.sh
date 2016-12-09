@@ -38,7 +38,8 @@ else
     pushd src/collectd
     test -f ${collectd_version}.tar.bz2 || curl -o ${collectd_version}.tar.bz2 https://collectd.org/files/${collectd_version}.tar.bz2
     if [ ! -d ${collectd_version} ] ; then
-       tar -jxvf ${collectd_version}.tar.bz2
+       # kill the tar if we can't unpack ... next build will re-download
+       tar -jxvf ${collectd_version}.tar.bz2 || rm ${collectd_version}
     fi
     cd ${collectd_version}
     ./configure
