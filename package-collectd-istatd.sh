@@ -36,7 +36,7 @@ else
     fi
     test -d src/collectd || mkdir -p src/collectd
     pushd src/collectd
-    test -f ${collectd_version}.tar.bz2 || curl -o ${collectd_version}.tar.bz2 https://collectd.org/files/${collect_version}.tar.bz2
+    test -f ${collectd_version}.tar.bz2 || curl -o ${collectd_version}.tar.bz2 https://collectd.org/files/${collectd_version}.tar.bz2
     if [ ! -d ${collectd_version} ] ; then
        tar -jxvf ${collectd_version}.tar.bz2
     fi
