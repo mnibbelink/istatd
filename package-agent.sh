@@ -12,7 +12,7 @@ fi
 if ruby --version | grep ruby.1.8 ; then 
    export PATH=/opt/ruby/2.0/bin:$PATH
 fi
-version=$(git describe --tags | sed -e "s/^v//")
+version=$(git describe --tags | sed -e "s/^v//" | cut -f1-2 -d-)
 
 
 if [[ -e "/etc/redhat-release" ]]; then
