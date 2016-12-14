@@ -17,7 +17,13 @@ version=$(git describe --tags | sed -e "s/^v//" | cut -f1-2 -d-)
 if [[ -e "/etc/redhat-release" ]]; then
    export DEPENDS="boost-date-time boost-filesystem boost-iostreams boost-signals boost-system boost-thread glibc libgcc libstatgrab libstdc++"
 else
-   DEPENDS="libc6 libgcc1 libstatgrab9 libstdc++6"
+   DEPENDS="libc6 libgcc1 libstdc++6"
+   ver=$(lsb_release -r -s | cut -f1 -d\.)
+   if [ $ver -eq 16 ] ; then
+       DEPENDS="$DEPENDS libstatgrab10"
+   else
+       DEPENDS="$DEPENDS libstatgrab9"
+   fi
    # pick the version the packager is using ... boost versioning is derped on ubuntu
    for f in libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 ; do 
        d=$(dpkg -l | grep $f | grep -v dev | cut -c5- | cut -f1 -d:) 
