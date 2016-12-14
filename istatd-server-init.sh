@@ -49,7 +49,7 @@ start_istatd() {
             --pid-file "$PIDFILE" \
             --config "$CONFIG" \
             --log-file "$LOGFILE" \
-            $EXTRA_ARGS
+            $EXTRA_ARGS > /dev/null 2>&1 < /dev/null
         echo -n "$NAME."
         echo
     else
