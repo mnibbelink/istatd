@@ -43,6 +43,7 @@ mkdir -p etc/default
 mkdir -p etc/init.d
 mkdir -p usr/bin
 mkdir -p usr/share/doc/istatd-server
+mkdir -p usr/share/istatd
 
 cp ../istatd-server.default etc/default/istatd-server
 cp ../istatd-server-init.sh etc/init.d/istatd-server
@@ -50,6 +51,7 @@ cp ../istatd-server.settings etc/istatd-server.cfg
 cp ../bin/istatd usr/bin/istatd-server
 cp ../README.md usr/share/doc/istatd-server
 gzip usr/share/doc/istatd-server/README.md
+cp -r ../files usr/share/istatd
 
 chmod +x usr/bin/istatd-server
 
