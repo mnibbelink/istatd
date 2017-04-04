@@ -86,6 +86,19 @@ private:
     int64_t freeSpace_;
 };
 
+bool key_compare_nocase (const std::pair<std::string, CounterResponse>& a, const std::pair<std::string, CounterResponse>& b)
+{
+  unsigned int i=0;
+  while ( (i<a.first.length()) && (i<b.first.length()) )
+    {
+      if (tolower(a.first[i])<tolower(b.first[i])) return true;
+      else if (tolower(a.first[i])>tolower(b.first[i])) return false;
+      ++i;
+    }
+  return ( a.first.length() < b.first.length() );
+}
+
+
 void run_tests(void)
 {
     Mmap *mm;
@@ -113,7 +126,12 @@ void run_tests(void)
         std::list<std::pair<std::string, CounterResponse> > oList2;
         store.listMatchingCounters("taco*", oList2);
         assert_equal(3, oList2.size());
+	oList2.sort(key_compare_nocase);
         std::list<std::pair<std::string, CounterResponse> >::iterator ptr = oList2.begin();
+        assert_equal("taco", (*ptr).first);
+        assert_equal(false, (*ptr).second.isLeaf);
+        assert_equal(CounterResponse::DisplayTypeAggregate, (*ptr).second.counterType);
+	std::advance(ptr, 1);
         assert_equal("taco.bell", (*ptr).first);
         assert_equal(true, (*ptr).second.isLeaf);
         assert_equal(CounterResponse::DisplayTypeGauge, (*ptr).second.counterType);
@@ -121,10 +139,6 @@ void run_tests(void)
         assert_equal("taco.cheese", (*ptr).first);
         assert_equal(true, (*ptr).second.isLeaf);
         assert_equal(CounterResponse::DisplayTypeEvent, (*ptr).second.counterType);
-        std::advance(ptr, 1);
-        assert_equal("taco", (*ptr).first);
-        assert_equal(false, (*ptr).second.isLeaf);
-        assert_equal(CounterResponse::DisplayTypeAggregate, (*ptr).second.counterType);
     }
     mm->dispose();
 
