@@ -2,6 +2,7 @@
 
 set -xe
 folder_name='istatd-agent'
+flavor=$(lsb_release -i -s)
 
 # ensure we don't bomb out later
 if [ -d sandbox ] ; then
@@ -63,15 +64,17 @@ fi
 
 if [[ -e "/etc/redhat-release" ]]; then
     target=rpm
+    script_dir=rpm
 else
     target=deb
+    script_dir=debian
 fi
 
 fpm -s dir -t $target --name $folder_name --version ${version} --iteration $iter $(for f in $DEPENDS ; do echo --depends $f ; done) \
-    --before-install ../debian/istatd-agent.preinst \
-    --after-install ../debian/istatd-agent.postinst \
-    --before-remove ../debian/istatd-agent.prerm \
-    --after-remove ../debian/istatd-agent.postrm \
+    --before-install ../${script_dir}/istatd-agent.preinst \
+    --after-install ../${script_dir}/istatd-agent.postinst \
+    --before-remove ../${script_dir}/istatd-agent.prerm \
+    --after-remove ../${script_dir}/istatd-agent.postrm \
     *
 
 mv *.$target ..
