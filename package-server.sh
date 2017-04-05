@@ -69,7 +69,12 @@ else
     target=deb
 fi
 
-fpm -s dir -t $target --name $folder_name --version ${version} --iteration $iter $(for f in $DEPENDS ; do echo --depends $f ; done) *
+fpm -s dir -t $target --name $folder_name --version ${version} --iteration $iter $(for f in $DEPENDS ; do echo --depends $f ; done) \
+    --before-install ../debian/istatd-server.preinst \
+    --after-install ../debian/istatd-server.postinst \
+    --before-remove ../debian/istatd-server.prerm \
+    --after-remove ../debian/istatd-server.postrm \
+    *
 
 mv *.$target ..
 
