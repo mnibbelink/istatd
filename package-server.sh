@@ -65,8 +65,10 @@ fi
 
 if [[ -e "/etc/redhat-release" ]]; then
     target=rpm
+    script_dir=rpm
 else
     target=deb
+    script_dir=debian
 fi
 
 fpm -s dir -t $target --name $folder_name --version ${version} --iteration $iter $(for f in $DEPENDS ; do echo --depends $f ; done) \
