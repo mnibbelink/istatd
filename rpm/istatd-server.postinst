@@ -6,9 +6,9 @@ if [ "$1" != "1" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-server" ]; then
-        update-rc.d istatd-server defaults
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d istatd-server start ||true
+        /usr/sbin/chkconfig istatd-server on
+        if [ -x /usr/sbin/service ]; then
+                /usr/sbin/service istatd-server start ||true
         else
                 /etc/init.d/istatd-server start ||true
         fi

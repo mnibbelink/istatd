@@ -6,12 +6,13 @@ if [ "$1" != "0" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-server" ]; then
-        update-rc.d istatd-server defaults
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d istatd-server stop || true
+        /usr/sbin/chkconfig istatd-server on
+        if [ -x /usr/sbin/service ]; then
+                /usr/sbin/service istatd-server stop || true
         else
-                /etc/init.d/istatd-server stop || true
+                /usr/sbin/service stop || true
         fi
+	/usr/sbin/chkconfig --del istatd-server 
 fi
 
 exit 0

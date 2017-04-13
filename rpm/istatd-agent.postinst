@@ -6,9 +6,9 @@ if [ "$1" != "1" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-agent" ]; then
-        update-rc.d istatd-agent defaults
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d istatd-agent start ||true
+        /usr/sbin/chkconfig istatd-agent on
+        if [ -x /usr/sbin/service ]; then
+                /usr/sbin/service istatd-agent start ||true
         else
                 /etc/init.d/istatd-agent start ||true
         fi

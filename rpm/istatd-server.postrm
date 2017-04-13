@@ -2,6 +2,4 @@
 
 set -e
 
-if [ "$1" = "0" ]; then
-    update-rc.d istatd-server remove
-fi
+# just here for completeness

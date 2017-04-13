@@ -6,12 +6,13 @@ if [ "$1" != "0" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-agent" ]; then
-        update-rc.d istatd-agent defaults
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d istatd-agent stop || true
+        /usr/sbin/chkconfig istatd-agent off
+        if [ -x /usr/sbin/service ]; then
+                /usr/sbin/service istatd-agent stop || true
         else
                 /etc/init.d/istatd-agent stop || true
         fi
+        /usr/sbin/chkconfig --del istatd-agent
 fi
 
 exit 0
