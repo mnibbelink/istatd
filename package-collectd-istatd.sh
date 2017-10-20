@@ -32,7 +32,7 @@ else
     if lsb_release -r | grep -E "\s6\." ; then
 	collectd_version=collectd-5.5.0
     else
-	collectd_version=collectd-5.6.0
+	collectd_version=collectd-5.7.1
     fi
     test -d src/collectd || mkdir -p src/collectd
     pushd src/collectd
