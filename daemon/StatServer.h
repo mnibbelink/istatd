@@ -106,7 +106,7 @@ public:
         int udpBufferSize);
     ~StatServer();
     inline bool hasStore() const { return hasStatStore_; }
-    inline bool hasAgent() const { return !forward_.empty(); }
+    inline bool hasAgent() const { return !forwardList_.empty(); }
     inline boost::asio::io_service &service() { return svc_; }
     inline boost::shared_ptr<IStatStore> store() const
         {
@@ -126,12 +126,14 @@ public:
 private:
     typedef std::tr1::unordered_map<void *, boost::shared_ptr<MetaInfo> > InfoHashMap;
     typedef std::vector<boost::shared_ptr<ConnectionInfo> > ForwardList;
+    typedef std::vector<ForwardList *> ForwardListList;
+    typedef std::vector<std::string> ForwardHostPorts;
     typedef std::list<boost::shared_ptr<AgentFlushRequest> > FlushRequestList;
 
     void startResolveAgents();
-    void on_forwardData(size_t forwardIndex);
+    void on_forwardData(ForwardList *fl, size_t forwardIndex);
     void on_connection();
-    void on_forwardWrite(size_t forwardIndex, size_t n);
+    void on_forwardWrite(ForwardList *fl, size_t forwardIndex, size_t n);
     void on_inputData(boost::shared_ptr<ConnectionInfo> ec);
     void on_inputLost(boost::shared_ptr<ConnectionInfo> ec);
     void recvOneUdp();
@@ -169,7 +171,8 @@ private:
     bool hasStatStore_;
     boost::shared_ptr<IStatStore> statStore_;
 
-    ForwardList forward_;
+    ForwardListList forwardList_;
+    ForwardHostPorts forwardHostPorts_;
     EagerConnectionFactory input_;
     boost::asio::io_service &svc_;
     boost::asio::ip::udp::socket udpSocket_;
