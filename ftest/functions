@@ -8,6 +8,7 @@ set -o nounset
 set +o histexpand
 
 FTEST_NAME=`basename $0 .sh`
+TMPROOT=/var/tmp/$(whoami)
 echo $FTEST_NAME
 
 export EXIT_HOOK=""
@@ -525,7 +526,7 @@ function assert_files_equal {
     else
 	DIFF_ARGS=""
     fi
-    TMPF=/var/tmp/assert_file_equal_$$.txt
+    TMPF=$TMPROOT/assert_file_equal_$$.txt
     if ! diff $DIFF_ARGS $FILE1 $FILE2 > $TMPF 2>&1 ; then
         echo "FAILURE: $TEST_NAME"
         echo "test_output < $FILE1"
@@ -551,8 +552,8 @@ function assert_expected {
 }
 
 TEST_NUM=0
-TEST_OUT=/var/tmp/test_out_$$
-EXPECT_OUT=/var/tmp/expect_out_$$
+TEST_OUT=$TMPROOT/test_out_$$
+EXPECT_OUT=$TMPROOT/expect_out_$$
 TEST_NAME=""
 function test_name {
     TEST_NAME=$1
@@ -565,7 +566,7 @@ function test_name {
 alias get_test_number='print +%03d $TEST_NUM'
 
 STARTED_SERVERS=""
-DBDIR=/var/tmp/test/func$$
+DBDIR=$TMPROOT/test/func$$
 rm -rf "$DBDIR"
 mkdir -p "$DBDIR"
 chown -R `whoami` $DBDIR
