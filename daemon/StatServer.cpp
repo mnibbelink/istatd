@@ -1,4 +1,3 @@
-
 #include <istat/StatFile.h>
 #include <istat/Atomic.h>
 #include <istat/strfunc.h>
@@ -15,6 +14,7 @@
 #include <string>
 #include <unistd.h>
 
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/bind/placeholders.hpp>
@@ -122,14 +122,28 @@ StatServer::StatServer(int statPort, std::string listenAddress,
     }
 
     if (!agent_.empty())
-    {
-        for (size_t i = 0; i < agentCount_; ++i) {
-            forward_.push_back(EagerConnection::create(svc));
-        }
-
-        startResolveAgents();
-        gotSomething = true;
-    }
+      {
+	std::vector<std::string> agents;
+	explode(agent_, ',', agents);
+	if (agents.size())
+	  {
+	    BOOST_FOREACH(std::string &str, agents)
+	      {
+		trim(str);
+		if (str.length())
+		  {
+		    ForwardList *f_ = new ForwardList();
+		    forwardHostPorts_.push_back(str);
+		    forwardList_.push_back(f_);
+		    for (size_t i = 0; i < agentCount_; ++i) {
+		      f_->push_back(EagerConnection::create(svc));
+		    }
+		  }
+	      }
+	    startResolveAgents();
+	    gotSomething = true;
+	  }
+      }
     if (!statStore_)
     {
         hasStatStore_ = false;
@@ -302,15 +316,20 @@ void StatServer::startResolveAgents()
     forwardTimer_.expires_from_now(boost::posix_time::seconds(forwardInterval_));
     forwardTimer_.async_wait(boost::bind(&StatServer::on_forwardTimer, this));
 
-    for (size_t i = 0; i < agentCount_; ++i) {
-        forward_[i]->onData_.connect(boost::bind(&StatServer::on_forwardData, this, i));
-        forward_[i]->onWrite_.connect(boost::bind(&StatServer::on_forwardWrite, this, i, _1));
-        forward_[i]->open(agent_, info.str());
-        forward_[i]->asEagerConnection()->startRead();
+    size_t masters = forwardList_.size();
+    for (size_t j = 0; j < masters; ++j) {
+      std::string master_host_port = forwardHostPorts_[j];
+      ForwardList *fl = forwardList_[j];
+      for (size_t i = 0; i < agentCount_; ++i) {
+        (*fl)[i]->onData_.connect(boost::bind(&StatServer::on_forwardData, this, fl, i));
+        (*fl)[i]->onWrite_.connect(boost::bind(&StatServer::on_forwardWrite, this, fl, i, _1));
+        (*fl)[i]->open(master_host_port, info.str());
+        (*fl)[i]->asEagerConnection()->startRead();
+      }
     }
 }
 
-void StatServer::on_forwardWrite(size_t forwardIndex, size_t n)
+void StatServer::on_forwardWrite(ForwardList *fl, size_t forwardIndex, size_t n)
 {
     FlushRequestList afrs;
     {
@@ -333,19 +352,19 @@ void StatServer::on_forwardWrite(size_t forwardIndex, size_t n)
     }
 }
 
-void StatServer::on_forwardData(size_t forwardIndex)
+void StatServer::on_forwardData(ForwardList *fl, size_t forwardIndex)
 {
     LogSpam << "StatServer::on_forwardData()";
     //  This really should never happen, because the server on the other end
     //  will never send anything back!
-    size_t sz = forward_[forwardIndex]->pendingIn();
+    size_t sz = (*fl)[forwardIndex]->pendingIn();
     if (sz == 0)
     {
         return;
     }
     std::string s;
-    s.resize(forward_[forwardIndex]->pendingIn());
-    forward_[forwardIndex]->readIn(&s[0], sz);
+    s.resize((*fl)[forwardIndex]->pendingIn());
+    (*fl)[forwardIndex]->readIn(&s[0], sz);
     LogError << "Unexpected data back from agent forward server: " << s;
 }
 
@@ -561,11 +580,14 @@ bool StatServer::handle_meta_info(std::string const &cmd, boost::shared_ptr<Conn
     istat::trim(right);
     metaInfo(ec)->info_[left.substr(1)] = right;
 
-    for (ForwardList::iterator i = forward_.begin(); i !=  forward_.end(); ++i) {
-        // we do not bucketize the agent info ... direct forward
+    for (ForwardListList::iterator ii = forwardList_.begin(); ii < forwardList_.end(); ++ii) {
+      ForwardList conns;
+      for (ForwardList::iterator i = (*ii)->begin(); i < (*ii)->end(); ++i) {
         if ((*i)->opened()) {
-            (*i)->writeOut(cmd + "\n");
+	  // we do not bucketize the agent info ... direct forward
+	  (*i)->writeOut(cmd + "\n");
         }
+      }
     }
 
     return true;
@@ -641,55 +663,61 @@ void StatServer::clearForward(AgentFlushRequest * agentFlushRequest)
         grab aholdof(forwardMutex_);
         buckets.swap(forwardBuckets_);
     }
-    ForwardList conns;
-    for (ForwardList::iterator i = forward_.begin(); i < forward_.end(); ++i) {
+
+
+    for (ForwardListList::iterator ii = forwardList_.begin(); ii < forwardList_.end(); ++ii) {
+      ForwardList conns;
+      for (ForwardList::iterator i = (*ii)->begin(); i < (*ii)->end(); ++i) {
         if ((*i)->opened()) {
-            conns.push_back(*i);
+	  conns.push_back(*i);
         }
-    }
-    size_t count = conns.size();
-    if ((count > 0) && buckets.size())
-    {
-        size_t forwardIndex = 0;
-        //  if not opened, then we lose this bucket
-        std::stringstream ss[count];
-        for (std::tr1::unordered_map<std::string, Bucketizer>::iterator
-            ptr(buckets.begin()), end (buckets.end());
-            ptr != end;
-            ++ptr)
-        {
-            Bucketizer &bizer((*ptr).second);
-            if ((*ptr).first[0] == '*')
-            {
-                for (unsigned int i = 0 ; i < bizer.BUCKET_COUNT; i++) {
+      }
+
+      size_t count = conns.size();
+      if ((count > 0) && buckets.size())
+	{
+	  size_t forwardIndex = 0;
+	  //  if not opened, then we lose this bucket
+	  std::stringstream ss[count];
+	  for (std::tr1::unordered_map<std::string, Bucketizer>::iterator
+		 ptr(buckets.begin()), end (buckets.end());
+	       ptr != end;
+	       ++ptr)
+	    {
+	      Bucketizer &bizer((*ptr).second);
+	      if ((*ptr).first[0] == '*')
+		{
+		  for (unsigned int i = 0 ; i < bizer.BUCKET_COUNT; i++) {
                     istat::Bucket b = bizer.get(i);
                     if (b.count() > 0) {
-                        ss[forwardIndex] << (*ptr).first << " " << b.time() << " " << b.sum() << "\r\n";
+		      ss[forwardIndex] << (*ptr).first << " " << b.time() << " " << b.sum() << "\r\n";
                     }
-                }
-            }
-            else
-            {
-                for (unsigned int i = 0 ; i < bizer.BUCKET_COUNT; i++) {
+		  }
+		}
+	      else
+		{
+		  for (unsigned int i = 0 ; i < bizer.BUCKET_COUNT; i++) {
                     istat::Bucket b = bizer.get(i);
                     if (b.count() > 0) {
-                        ss[forwardIndex] << (*ptr).first << " " << b.time() << " " << b.sum() << " " <<
-                            b.sumSq() << " " << b.min() << " " << b.max() << " " << b.count() << "\r\n";
+		      ss[forwardIndex] << (*ptr).first << " " << b.time() << " " << b.sum() << " " <<
+			b.sumSq() << " " << b.min() << " " << b.max() << " " << b.count() << "\r\n";
                     }
-                }
-            }
-            ++forwardIndex;
-            forwardIndex %= count;
-        }
-        for (size_t i = 0; i < count; ++i) {
+		  }
+		}
+
+	      ++forwardIndex;
+	      forwardIndex %= count;
+	    }
+	  for (size_t i = 0; i < count; ++i) {
             std::string str(ss[i].str());
             if (!str.empty()) {
-                size_t pending = conns[i]->writeOut(str);
-                if (agentFlushRequest != NULL) {
-                    agentFlushRequest->add(i, pending);
-                }
+	      size_t pending = conns[i]->writeOut(str);
+	      if (agentFlushRequest != NULL) {
+		agentFlushRequest->add(i, pending);
+	      }
             }
-        }
+	  }
+	}
     }
 }
 
