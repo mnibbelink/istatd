@@ -9,7 +9,7 @@ if [ -d sandbox ] ; then
 fi
 
 # only use optional ruby if system ruby is super old
-if ruby --version | grep ruby.1.8 ; then 
+if ruby --version | grep ruby.1.8 ; then
    export PATH=/opt/ruby/2.0/bin:$PATH
 fi
 version=$(git describe --tags | sed -e "s/^v//" | cut -f1-2 -d-)
@@ -25,8 +25,8 @@ else
        DEPENDS="$DEPENDS libstatgrab9"
    fi
    # pick the version the packager is using ... boost versioning is derped on ubuntu
-   for f in libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 ; do 
-       d=$(dpkg -l | grep $f | grep -v dev | cut -c5- | cut -f1 -d:) 
+   for f in libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 ; do
+       d=$(dpkg -l | grep $f | grep -v dev | cut -c5- | cut -f1 -d:)
        DEPENDS="$DEPENDS $d"
    done
    export DEPENDS
@@ -52,6 +52,11 @@ cp ../bin/istatd usr/bin/istatd-server
 cp ../README.md usr/share/doc/istatd-server
 gzip usr/share/doc/istatd-server/README.md
 cp -r ../files usr/share/istatd
+
+# all remaining istatd utilities
+for f in istatd_filedump istatd_filegen istatd_fileinfo istatd_flush istatd()import istatd_lint istatd_loadtest istatd_netcat istatd_nums2file istatd_purge istatd_sleep istatd_stat istatd_transplant ; do
+    cp ../bin/$f usr/bin/$f
+done
 
 chmod +x usr/bin/istatd-server
 

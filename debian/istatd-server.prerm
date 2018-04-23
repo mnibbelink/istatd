@@ -6,7 +6,7 @@ if [ "$1" != "remove" -a "$1" != "purge" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-server" ]; then
-        update-rc.d istatd-server defaults
+        update-rc.d istatd-server defaults || true
         if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d istatd-server stop || true
         else

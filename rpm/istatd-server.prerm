@@ -6,13 +6,13 @@ if [ "$1" != "0" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-server" ]; then
-        /usr/sbin/chkconfig istatd-server on
+        /usr/sbin/chkconfig istatd-server on || true
         if [ -x /usr/sbin/service ]; then
                 /usr/sbin/service istatd-server stop || true
         else
                 /usr/sbin/service stop || true
         fi
-	/usr/sbin/chkconfig --del istatd-server 
+        /usr/sbin/chkconfig --del istatd-server
 fi
 
 exit 0
