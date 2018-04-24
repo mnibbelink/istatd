@@ -54,7 +54,7 @@ gzip usr/share/doc/istatd-server/README.md
 cp -r ../files usr/share/istatd
 
 # all remaining istatd utilities
-for f in istatd_filedump istatd_filegen istatd_fileinfo istatd_flush istatd()import istatd_lint istatd_loadtest istatd_netcat istatd_nums2file istatd_purge istatd_sleep istatd_stat istatd_transplant ; do
+for f in istatd_filedump istatd_filegen istatd_fileinfo istatd_flush istatd_lint istatd_loadtest istatd_netcat istatd_nums2file istatd_purge istatd_sleep istatd_stat istatd_transplant ; do
     cp ../bin/$f usr/bin/$f
 done
 
