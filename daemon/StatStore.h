@@ -31,7 +31,8 @@ public:
         boost::shared_ptr<IStatCounterFactory> factory,
         istat::Mmap *mm, long flushMs = -1,
         long minimumRequiredSpace = -1,
-        int pruneEmptyDirsMs = 60000
+        int pruneEmptyDirsMs = 60000,
+        bool recursivelyCreateCounters = true
         );
 
     virtual ~StatStore();
@@ -101,10 +102,11 @@ private:
     int64_t numLoaded_;
     int aggregateCount_;
     int pruneEmptyDirsMs_;
+    bool recursivelyCreateCounters_;
     volatile int queuedRefreshes_;
 
     //  openCounter() takes an un-munged name!
-    boost::shared_ptr<AsyncCounter> openCounter(std::string const &name, bool create=false, time_t zeroTime=0);
+    boost::shared_ptr<AsyncCounter> openCounter(std::string const &name, bool create=false, bool onlyExisting=false, time_t zeroTime=0);
 
     void scheduleRefresh();
     void refreshAllKeys();

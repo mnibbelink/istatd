@@ -182,6 +182,9 @@ Argument<std::string> blacklist_path("blacklist-path", "", "Where to look for bl
 Argument<int> blacklist_period("blacklist-period", 60, "How often to check the file");
 Argument<bool> disallow_compressed_responses("disallow-compressed-responses", false, "Should istatd-server disallow compression of http responses by accept-encoding");
 Argument<int> udpBufferSize("udp-buffer-size", 1024, "Buffer size for UDP sockets, in Kilobytes");
+Argument<int> listenOverflowBacklog("listen-overflow-backlog", boost::asio::socket_base::max_connections, "Listen overflow backlog, defaults to boost::asio::socket_base::max_connections");
+Argument<bool> dontRecursivelyCreateCounters("dont-recursively-create-counters", false, "Should we disable recursing up the counter chain (split on .) and make parent counters");
+Argument<int> allocationStrategy("allocation-strategy", static_cast<int>(istat::allocateAll), "The allocation strategy used when making files. 1 = write all as 0, 2 = sparse file");
 
 
 void usage()
@@ -848,6 +851,8 @@ int main(int argc, char const *argv[])
         LogConfig::setOutputFile(log_file_path.c_str());
     }
 
+    mm->setAllocationStrategy(static_cast<AllocationStrategy>(allocationStrategy.get()));
+
     // test convert the address to ensure it's convertable without exceptions before entering main code
     if (listenAddress.get().length() > 0) {
         try
@@ -935,7 +940,7 @@ int main(int argc, char const *argv[])
             storepath = combine_paths(initialDir_, storepath);
             boost::shared_ptr<IStatCounterFactory> statCounterFactory = boost::make_shared<StatCounterFactory>(storepath, mm, boost::ref(retentionPolicy));
 
-            StatStore * ss = new StatStore(storepath, dropped_uid(), g_service, statCounterFactory, mm, flush.get()*1000, minimumRequiredSpace.get(), pruneEmptyDirectoriesInterval.get()*1000);
+            StatStore * ss = new StatStore(storepath, dropped_uid(), g_service, statCounterFactory, mm, flush.get()*1000, minimumRequiredSpace.get(), pruneEmptyDirectoriesInterval.get()*1000, !dontRecursivelyCreateCounters.get());
             LoopbackCounter::setup(ss, g_service);
             statStore = boost::shared_ptr<IStatStore>(ss);
         }
@@ -943,10 +948,10 @@ int main(int argc, char const *argv[])
         Blacklist::Configuration cfg = {};
         cfg.path = blacklist_path.get();
         cfg.period = blacklist_period.get();
-        StatServer ss(statPort.get(), listenAddress.get(), agent.get(), std::max(agentCount.get(), 1), std::max(agentInterval.get(), 1), cfg, g_service, statStore, udpBufferSize.get());
+        StatServer ss(statPort.get(), listenAddress.get(), agent.get(), std::max(agentCount.get(), 1), std::max(agentInterval.get(), 1), cfg, g_service, statStore, udpBufferSize.get(), listenOverflowBacklog.get());
         if (replicaPort.get())
         {
-            reps = new ReplicaServer(replicaPort.get(), listenAddress.get(), g_service, statStore);
+            reps = new ReplicaServer(replicaPort.get(), listenAddress.get(), g_service, statStore, listenOverflowBacklog.get());
         }
         if (replicaOf.get() != "")
         {
@@ -960,12 +965,12 @@ int main(int argc, char const *argv[])
 
         if (httpPort.get())
         {
-            hsp = new HttpServer(httpPort.get(), g_service, listenAddress.get());
+            hsp = new HttpServer(httpPort.get(), g_service, listenAddress.get(), listenOverflowBacklog.get());
             hsp->onRequest_.connect(boost::bind(&onHttpRequest, &ss, _1));
         }
         if (adminPort.get())
         {
-            asp = new AdminServer(adminPort.get(), listenAddress.get(), g_service, hsp, &ss, reps, rof);
+            asp = new AdminServer(adminPort.get(), listenAddress.get(), g_service, hsp, &ss, reps, rof, listenOverflowBacklog.get());
         }
 
         statSuffix_ = localStats.get();

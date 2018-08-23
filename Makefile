@@ -40,7 +40,7 @@ LXXFLAGS:=-Lobj/ $(patsubst %,-l%,$(LIBS))
 ifeq ($(OPT),)
 OPT := -O2
 endif
-CXXFLAGS:=-pipe $(OPT) -g -I. -Iinclude -MMD -D_LARGEFILE64_SOURCE -Wall -Werror
+CXXFLAGS:=-std=gnu++98 -pipe $(OPT) -g -I. -Iinclude -MMD -D_LARGEFILE64_SOURCE -Wall -Werror
 SYS_LIBS:=$(BOOST_SYSTEM) $(BOOST_THREAD) -lboost_signals -lpthread $(STATGRAB) \
   $(BOOST_FILESYSTEM) $(BOOST_IOSTREAMS) -lboost_date_time $(LIBRT)
 
@@ -119,6 +119,7 @@ $(foreach file,$(FILES_SRCS),$(eval $(call add_install,$(file),$(USR_PREFIX)/sha
 
 # add install must go before make directories
 $(foreach dir,$(INSTALL_DIRS),$(eval $(call mk_install_dir,$(patsubst %/,%,$(dir)))))
+$(foreach dir,$(INSTALL_DIRS),$(eval $(call mk_install_dir,$(dir))))
 $(call mk_install_dir,$(VAR_PREFIX)/db/istatd)
 
 install:	$(INSTALL_DIRS) $(INSTALL_DSTS)
