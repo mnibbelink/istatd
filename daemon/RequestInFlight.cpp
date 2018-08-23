@@ -677,6 +677,8 @@ static bool getValue(std::map<std::string, std::string> const &params,
     return true;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-overflow"
 void RequestInFlight::generateCounterData(
         std::string const &cname,
         std::map<std::string, std::string> params,
@@ -744,6 +746,7 @@ void RequestInFlight::generateCounterData(
         throw std::runtime_error("unrecognized format. must be 'json' or 'csv'.");
     }
 }
+#pragma GCC diagnostic pop
 
 void RequestInFlight::generateCounterJson(boost::shared_ptr<IStatCounter> statCounter, time_t startTime, time_t endTime, size_t sampleCount, intmax_t trailing)
 {
