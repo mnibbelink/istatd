@@ -4,7 +4,7 @@ SCRIPTDIR=`dirname $0`
 source "$SCRIPTDIR/functions"
 
 ###############################
-# MAIN 
+# MAIN
 ###############################
 
 start_server master
@@ -26,7 +26,7 @@ test_counter master "test/counter/10s" 42
 test_counter master "test/counter/a/10s" 42
 test_counter master "test/counter/b/10s" 42
 test_counter master "test/counter/c/10s" 42
-test_counter master "istatd/admin/connections/10s" 0 0 0 0 0.1 0 0 0 0 
+test_counter master "istatd/admin/connections/10s" 0 0 0 0 0.1 0 0 0 0
 test_counter master "istatd/admin/commands/10s" 0 0 0 0 0.1 0 0 0 0
 
 # check second master
@@ -36,7 +36,7 @@ test_counter master2 "test/counter/10s" 42
 test_counter master2 "test/counter/a/10s" 42
 test_counter master2 "test/counter/b/10s" 42
 test_counter master2 "test/counter/c/10s" 42
-test_counter master2 "istatd/admin/connections/10s" 0 0 0 0 0.1 0 0 0 0 
+test_counter master2 "istatd/admin/connections/10s" 0 0 0 0 0.1 0 0 0 0
 test_counter master2 "istatd/admin/commands/10s" 0 0 0 0 0.1 0 0 0 0
 
 send_event agent_multi "!test.event|superevent|testhost"
@@ -45,9 +45,11 @@ flush_istatd agent_multi
 sleep 1 # terrible
 
 flush_istatd master
+sleep 1 # terrible
 test_counter master "test/postevent/10s" 99
 
 flush_istatd master2
+sleep 1 # terrible
 test_counter master2 "test/postevent/10s" 99
 
 sleep 1 # terrible
@@ -60,4 +62,3 @@ purge_istatd 18033
 #Clean up and exit
 cleanup_test
 rm -rf "$DBDIR"
-

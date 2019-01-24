@@ -4,7 +4,7 @@ SCRIPTDIR=`dirname $0`
 source "$SCRIPTDIR/functions"
 
 ###############################
-# MAIN 
+# MAIN
 ###############################
 
 start_server master
@@ -24,6 +24,7 @@ send_stat ${INSTANCE} "test.counter" 50 45
 flush_istatd ${INSTANCE}
 sleep 1 # terrible
 flush_istatd master
+sleep 1 # terrible
 
 test_counter master "test/counter/10s" 42 43 44 45
 
@@ -32,4 +33,3 @@ purge_istatd 18032
 #Clean up and exit
 cleanup_test
 rm -rf "$DBDIR"
-

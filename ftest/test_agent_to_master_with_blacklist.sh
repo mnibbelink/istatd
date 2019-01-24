@@ -4,7 +4,7 @@ SCRIPTDIR=`dirname $0`
 source "$SCRIPTDIR/functions"
 
 ###############################
-# MAIN 
+# MAIN
 ###############################
 
 mkdir -p /var/tmp/blacklist/
@@ -20,6 +20,7 @@ send_stat agent "test.counter^a^b^c" 42
 flush_istatd agent
 sleep 1 # terrible
 flush_istatd master_w_blacklist
+sleep 1 # terrible
 test_counter_does_not_exist master_w_blacklist "test/counter/10s" 42
 test_counter_does_not_exist master_w_blacklist "test/counter/a/10s" 42
 test_counter_does_not_exist master_w_blacklist "test/counter/b/10s" 42
@@ -38,6 +39,7 @@ send_stat agent "test.postevent" 99
 flush_istatd agent
 sleep 1 # terrible
 flush_istatd master_w_blacklist
+sleep 1 # terrible
 test_counter master_w_blacklist "test/postevent/10s" 99
 test_counter_does_not_exist master_w_blacklist "test/counter/10s" 42
 sleep 1 # terrible
@@ -51,6 +53,7 @@ send_stat agent "test.event.after.blacklist.delete" 99
 flush_istatd agent
 sleep 1 # terrible
 flush_istatd master_w_blacklist
+sleep 1 # terrible
 test_counter master_w_blacklist "test/event/after/blacklist/delete/10s" 99
 sleep 1 # terrible
 
@@ -62,4 +65,3 @@ purge_istatd 18032
 cleanup_test
 rm -rf "$DBDIR"
 rm -rf /var/tmp/blacklist
-
