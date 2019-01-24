@@ -19,7 +19,7 @@ if [[ -e "/etc/redhat-release" ]]; then
 else
    DEPENDS="libc6 libgcc1 libstdc++6"
    ver=$(lsb_release -r -s | cut -f1 -d\.)
-   if [ $ver -eq 16 ] ; then
+   if [ $ver -ge 16 ] ; then
        DEPENDS="$DEPENDS libstatgrab10"
    else
        DEPENDS="$DEPENDS libstatgrab9"

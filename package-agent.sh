@@ -10,7 +10,7 @@ if [ -d sandbox ] ; then
 fi
 
 # only use optional ruby if system ruby is super old
-if ruby --version | grep ruby.1.8 ; then 
+if ruby --version | grep ruby.1.8 ; then
    export PATH=/opt/ruby/2.0/bin:$PATH
 fi
 version=$(git describe --tags | sed -e "s/^v//" | cut -f1-2 -d-)
@@ -20,14 +20,14 @@ if [[ -e "/etc/redhat-release" ]]; then
 else
    DEPENDS="libc6 libgcc1 libstdc++6"
    ver=$(lsb_release -r -s | cut -f1 -d\.)
-   if [ $ver -eq 16 ] ; then
+   if [ $ver -ge 16 ] ; then
        DEPENDS="$DEPENDS libstatgrab10"
    else
        DEPENDS="$DEPENDS libstatgrab9"
    fi
    # pick the version the packager is using ... boost versioning is derped on ubuntu
-   for f in libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 ; do 
-       d=$(dpkg -l | grep $f | grep -v dev | cut -c5- | cut -f1 -d:) 
+   for f in libboost-filesystem1 libboost-iostreams1 libboost-system1 libboost-thread1 ; do
+       d=$(dpkg -l | grep $f | grep -v dev | cut -c5- | cut -f1 -d:)
        DEPENDS="$DEPENDS $d"
    done
    export DEPENDS
