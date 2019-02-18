@@ -295,15 +295,18 @@ function test_counter {
     FILENAME=$DBDIR/$PROFILE-store/`echo $COUNTER | tr [.] [/]`
     wait_for_file $FILENAME
     #flush_istatd $PROFILE
-    VALUES=( `bin/istatd_filedump $FILENAME | tail -n +2 | sed -e 's/[^,]*,\\([^,]*\\),.*/\\1/'` )
+    LENGTH=( `bin/istatd_filedump $FILENAME | tail -n +2 | wc -l` )
+    VALUES=( `bin/istatd_filedump $FILENAME | tail -n +2 | sed -e 's/[^,]*,\\([^,]*\\),.*/\\1/' | head -$#` )
     COUNT=${#VALUES[@]}
-    
-    if [ $COUNT != $# ]; then
+
+    # if the length < expected => error
+    # if expected + 4 < length => error
+    if [[ $LENGTH -lt $# ]] || [[ $LENGTH-4 -gt $# ]]; then
         bin/istatd_filedump $FILENAME
-        failure "Wrong file length for $FILENAME - expected exactly $# bucket(s), but got $COUNT bucket(s) instead."
+        failure "Wrong file length for $FILENAME - expected $# to $#+4 bucket(s), but got $LENGTH bucket(s) instead."
     else
         for (( i=1; i<=$COUNT; i++ )); do
-            value=${VALUES[$i - 1]} 
+            value=${VALUES[$i - 1]}
             if [ $value != ${!i} ]; then
                 bin/istatd_filedump $FILENAME
                 failure "Wrong sum in bucket $i of $FILENAME - expected ${!i}, but got $value instead."
@@ -547,9 +550,9 @@ function assert_files_equal {
     FILE1=$1
     FILE2=$2
     if [ $# -eq 3 ] ; then
-	DIFF_ARGS=$3
+        DIFF_ARGS=$3
     else
-	DIFF_ARGS=""
+        DIFF_ARGS=""
     fi
     TMPF=$TMPROOT/assert_file_equal_$$.txt
     if ! diff $DIFF_ARGS $FILE1 $FILE2 > $TMPF 2>&1 ; then
@@ -566,9 +569,9 @@ function assert_files_equal {
 function assert_expected {
     RESULT_F=$1
     if [ $# -eq 2 ] ; then
-	DIFF_ARGS="$2"
-    else 
-	DIFF_ARGS=""
+        DIFF_ARGS="$2"
+    else
+        DIFF_ARGS=""
     fi
     EXPECT_F=ftest/expected/$FTEST_NAME/$TEST_NAME
     [ -d ftest/expected ] || failure "dir does not exist: ftest/expected"
@@ -582,7 +585,7 @@ EXPECT_OUT=$TMPROOT/expect_out_$$
 TEST_NAME=""
 function test_name {
     TEST_NAME=$1
-    let TEST_NUM=$TEST_NUM+1    
+    let TEST_NUM=$TEST_NUM+1
     TEST_NUM_STR=`printf "%03d" $TEST_NUM`
     TEST_OUT=$DBDIR/test_${TEST_NUM_STR}
     EXPECT_OUT=$DBDIR/expect_${TEST_NUM_STR}
@@ -597,4 +600,3 @@ mkdir -p "$DBDIR"
 chown -R `whoami` $DBDIR
 onexit cleanup_exit
 trap 'echo "child died"' SIGCHLD
-
