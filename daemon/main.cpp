@@ -66,7 +66,7 @@ LoopbackCounter countExceptions("exceptions", TypeEvent);
 boost::asio::deadline_timer statsTimer_(g_service);
 time_t nextStatsTime_;
 enum { STATS_INTERVAL = 5 };
-boost::asio::strand statsStrand_(g_service);
+BOOST_ASIO_STRAND statsStrand_(g_service);
 std::string statSuffix_;
 std::string initialDir_;
 Mmap *mm(istat::NewMmap());
@@ -1051,4 +1051,3 @@ int main(int argc, char const *argv[])
 #if defined(main)
 #undef main
 #endif
-

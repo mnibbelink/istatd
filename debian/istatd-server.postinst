@@ -6,6 +6,7 @@ if [ "$1" != "configure" ]; then
 fi
 
 if [ -x "/etc/init.d/istatd-server" ]; then
+    # XXXmwn ... detect whether we are systemd or rc.d startup
         update-rc.d istatd-server defaults
         if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d istatd-server start ||true

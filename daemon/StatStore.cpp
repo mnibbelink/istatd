@@ -1,4 +1,3 @@
-
 #include "StatStore.h"
 #include "istat/strfunc.h"
 #include "Logs.h"
@@ -91,7 +90,7 @@ StatStore::~StatStore()
     syncTimer_.cancel();
 }
 
-int StatStore::aggregateCount() 
+int StatStore::aggregateCount()
 {
     return aggregateCount_;
 }
@@ -145,7 +144,7 @@ void StatStore::record(std::string const &ctr, time_t time, double value, double
     }
 }
 
-void StatStore::find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, boost::asio::strand * &strand)
+void StatStore::find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, BOOST_ASIO_STRAND * &strand)
 {
     boost::shared_ptr<StatStore::AsyncCounter> asyncCounter = openCounter(ctr);
     if (!asyncCounter) {
@@ -681,4 +680,3 @@ UniqueId UniqueId::make()
     memcpy(ret.id, &pid, sizeof(pid_t));
     return ret;
 }
-

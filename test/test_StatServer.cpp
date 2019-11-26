@@ -68,7 +68,7 @@ void test_counter() {
     boost::shared_ptr<ConnectionInfo> ec = boost::make_shared<FakeEagerConnection>(boost::ref(svc));
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand* strand = 0;
+    BOOST_ASIO_STRAND* strand = 0;
     server->handleCmd("something.different 4242", ec);
     svc.poll();
 
@@ -92,7 +92,7 @@ void test_multiple_counters() {
     boost::shared_ptr<ConnectionInfo> ec = boost::make_shared<FakeEagerConnection>(boost::ref(svc));
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand* strand;
+    BOOST_ASIO_STRAND* strand;
     server->handleCmd("test.counter^a^b^c 4242", ec);
     svc.poll();
 
@@ -115,7 +115,7 @@ void test_collated_counters() {
     boost::shared_ptr<ConnectionInfo> ec = boost::make_shared<FakeEagerConnection>(boost::ref(svc));
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand* strand;
+    BOOST_ASIO_STRAND* strand;
     time_t now = 1000000000 - 1000;
     istat::FakeTime ft(now);
     char buffer[BUFSIZE];
@@ -198,13 +198,13 @@ void test_blacklist() {
     server->getConnected(metaInfo);
 
     std::vector<MetaInfo>::iterator it = std::find_if(
-            metaInfo.begin(), 
-            metaInfo.end(), 
+            metaInfo.begin(),
+            metaInfo.end(),
             std::bind2nd(condition_match(), "hostname1"));
     assert_true(it != metaInfo.end());
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand* strand = 0;
+    BOOST_ASIO_STRAND* strand = 0;
     server->handleCmd("i.should.be.blacklisted 4242", ec);
     svc.poll();
 
@@ -226,13 +226,13 @@ void test_blacklist() {
     server->getConnected(metaInfoG);
 
     it = std::find_if(
-            metaInfoG.begin(), 
-            metaInfoG.end(), 
+            metaInfoG.begin(),
+            metaInfoG.end(),
             std::bind2nd(condition_match(), "hostname7"));
     assert_true(it != metaInfoG.end());
 
     boost::shared_ptr<IStatCounter> statCounterG;
-    boost::asio::strand* strandG = 0;
+    BOOST_ASIO_STRAND* strandG = 0;
     server->handleCmd("i.should.not.be.blacklisted 4242", ecg);
     svc.poll();
 
@@ -256,7 +256,7 @@ void test_start_with_missing_blacklist() {
     boost::shared_ptr<ConnectionInfo> ec = boost::make_shared<FakeEagerConnection>(boost::ref(svc));
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand* strand = 0;
+    BOOST_ASIO_STRAND* strand = 0;
     server->handleCmd("something.differenter 4242", ec);
     svc.poll();
 

@@ -1,7 +1,7 @@
-
 #if !defined(daemon_EagerConnection_h)
 #define daemon_EagerConnection_h
 
+#include "config.h"
 #include "threadfunc.h"
 
 #include <string>
@@ -45,7 +45,7 @@ public:
 };
 
 //  EagerConnection will attempt to establish a connection to a remote side.
-//  
+//
 class EagerConnection : public ConnectionInfo
 {
 public:
@@ -101,7 +101,7 @@ private:
     boost::asio::ip::tcp::socket socket_;
     boost::asio::ip::tcp::resolver resolver_;
     boost::asio::deadline_timer timer_;
-    boost::asio::strand strand_;
+    BOOST_ASIO_STRAND strand_;
     lock mutex_;
     buffer writeBuf_;
     buffer outgoing_;

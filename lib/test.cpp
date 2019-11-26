@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include "istat/test.h"
 #include <iostream>
 #include <stdlib.h>
@@ -77,7 +77,7 @@ namespace istat
         {
             std::ostringstream oss;
             oss << "getcwd(...) failed: "
-                << boost::system::error_code(errno, boost::system::get_system_category()).message();
+                << boost::system::error_code(errno, BOOST_SYSTEM_CATEGORY()).message();
             test_fail(oss.str());
         }
     }
@@ -219,4 +219,3 @@ namespace istat
         test_fail(oss.str());
     }
 }
-

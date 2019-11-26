@@ -1,16 +1,19 @@
-
 #if !defined(daemon_IStatStore_h)
 #define daemon_IStatStore_h
 
 #include <list>
 #include <vector>
 
+#include "config.h"
 #include "IStatCounter.h"
 #include "AllKeys.h"
 #include <istat/Header.h>
 
 #include <boost/asio/strand.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#ifdef BOOST_NEW_STRAND
+#   include <boost/asio/io_context_strand.hpp>
+#endif
 
 #include "Signal.h"
 
@@ -33,7 +36,7 @@ public:
     virtual void record(std::string const &ctr, time_t time, double value) = 0;
     virtual void record(std::string const &ctr, time_t time, double value, double valueSq, double min, double max, size_t cnt) = 0;
 
-    virtual void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, boost::asio::strand * &strand) = 0;
+    virtual void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, BOOST_ASIO_STRAND * &strand) = 0;
 
     virtual void listMatchingCounters(std::string const &pat, std::list<std::pair<std::string, CounterResponse> > &oList) = 0;
 
@@ -67,7 +70,7 @@ public:
     inline void record(std::string const &ctr, double value) {}
     inline void record(std::string const &ctr, time_t time, double value) {}
     inline void record(std::string const &ctr, time_t time, double value, double valueSq, double min, double max, size_t cnt) {}
-    inline void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, boost::asio::strand * &strand) { strand = 0; }
+    inline void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, BOOST_ASIO_STRAND * &strand) { strand = 0; }
     inline void listMatchingCounters(std::string const &pat, std::list<std::pair<std::string, CounterResponse> > &oList) {}
     inline std::string const &getLocation() const { static std::string ss; return ss; }
     inline void flushAll(IComplete *cmp) {}
@@ -81,4 +84,3 @@ public:
 };
 
 #endif  //  daemon_IStatStore_h
-

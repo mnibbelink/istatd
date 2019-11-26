@@ -1,4 +1,3 @@
-
 #if !defined(daemon_StatStore_h)
 #define daemon_StatStore_h
 
@@ -20,6 +19,9 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <istat/StatFile.h>
 
+#ifdef BOOST_NEW_STRAND
+#   include <boost/asio/io_context_strand.hpp>
+#endif
 
 class Deleter;
 
@@ -43,7 +45,7 @@ public:
     virtual void record(std::string const &ctr, time_t time, double value);
     virtual void record(std::string const &ctr, time_t time, double value, double valueSq, double min, double max, size_t cnt);
 
-    virtual void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, boost::asio::strand * &strand);
+    virtual void find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, BOOST_ASIO_STRAND * &strand);
 
     virtual void listMatchingCounters(std::string const &pat, std::list<std::pair<std::string, CounterResponse> > &oList);
 
@@ -70,7 +72,7 @@ public:
             strand_(svc) {
         }
         boost::shared_ptr<IStatCounter> statCounter_;
-        boost::asio::strand strand_;
+        BOOST_ASIO_STRAND strand_;
     };
     typedef std::map<std::string, boost::shared_ptr<AsyncCounter> > CounterMap;
 
@@ -85,7 +87,7 @@ private:
     std::string path_;
     boost::asio::io_service &svc_;
     boost::asio::deadline_timer pruneEmptyDirsTimer_;
-    boost::asio::strand refreshStrand_;
+    BOOST_ASIO_STRAND refreshStrand_;
     boost::asio::deadline_timer syncTimer_;
     boost::asio::deadline_timer availCheckTimer_;
     Shards::iterator syncIterator_;

@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include "LogInstanceFile.h"
 #include <stdexcept>
 #include <iostream>
@@ -57,14 +57,14 @@ namespace istat
 
             char filename[1024];
             os << "Could not open log file '" << path_ << "': "
-               << boost::system::error_code(errno, boost::system::get_system_category()).message()
+               << boost::system::error_code(errno, BOOST_SYSTEM_CATEGORY()).message()
                << std::endl
                << "cwd: ";
-               
+
             char* p = getcwd(filename, 1024);
             if(!p)
             {
-                os << boost::system::error_code(errno, boost::system::get_system_category()).message()
+                os << boost::system::error_code(errno, BOOST_SYSTEM_CATEGORY()).message()
                     << std::endl;
             }
             else
@@ -77,4 +77,3 @@ namespace istat
         }
     }
 }
-

@@ -36,8 +36,7 @@ flush_istatd single
 check_get 18011 "?s=local&sk=*.disk" '"from.disk":"yes"' '"to.disk":"no"'
 
 # these may take 10 seconds to show up
-wait_for_counter single istatd/pagecache/10s
+wait_for_counter single istatd/pagecache/hits/time_10s
 check_counters 18011 'istatd.*' 'istatd.pagecache.misses.time_10s' 'istatd.pagecache.hits.time_10s'
 
 cleanup_test
-

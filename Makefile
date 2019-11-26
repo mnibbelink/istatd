@@ -40,7 +40,7 @@ LXXFLAGS:=-Lobj/ $(patsubst %,-l%,$(LIBS))
 ifeq ($(OPT),)
 OPT := -O2
 endif
-CXXFLAGS:=-std=gnu++98 -pipe $(OPT) -g -I. -Iinclude -MMD -D_LARGEFILE64_SOURCE -Wall -Werror
+CXXFLAGS:=-std=gnu++98 -pipe $(OPT) -g -I. -Iinclude -MMD -D_LARGEFILE64_SOURCE -Wall -Werror -Wno-class-memaccess -Wno-stringop-truncation
 SYS_LIBS:=$(BOOST_SYSTEM) $(BOOST_THREAD) -lboost_signals -lpthread $(STATGRAB) \
   $(BOOST_FILESYSTEM) $(BOOST_IOSTREAMS) -lboost_date_time $(LIBRT)
 
@@ -52,7 +52,7 @@ config.h: configure
 	bash configure
 
 dpkg:
-	env DEB_BUILD_OPTIONS="nostrip" debuild -us -uc   
+	env DEB_BUILD_OPTIONS="nostrip" debuild -us -uc
 	@echo done
 
 build:	$(DIR_DEPS) $(BINS)

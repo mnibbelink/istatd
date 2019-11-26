@@ -21,6 +21,9 @@
 #include <boost/iostreams/filter/zlib.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/make_shared.hpp>
+#ifdef BOOST_NEW_STRAND
+#   include <boost/asio/io_context_strand.hpp>
+#endif
 
 using namespace istat;
 
@@ -254,16 +257,16 @@ public:
     size_t maxSamples_;
     bool trailing_;
     boost::shared_ptr<RequestInFlight> req_;
-    std::map<boost::shared_ptr<IStatCounter>, std::pair<boost::asio::strand *, std::string> > data;
+    std::map<boost::shared_ptr<IStatCounter>, std::pair<BOOST_ASIO_STRAND *, std::string> > data;
     int64_t num;
     lock strmLock;
     std::string delim;
     bool wrote_;
     bool compact_;
 
-    void add(boost::shared_ptr<IStatCounter> const &ctr, boost::asio::strand *strand, std::string const &name)
+    void add(boost::shared_ptr<IStatCounter> const &ctr, BOOST_ASIO_STRAND *strand, std::string const &name)
     {
-        data[ctr] = std::pair<boost::asio::strand *, std::string>(strand, name);
+        data[ctr] = std::pair<BOOST_ASIO_STRAND *, std::string>(strand, name);
     }
 
     void go(std::string const &d)
@@ -277,7 +280,7 @@ public:
         else
         {
             num = data.size();
-            for (std::map<boost::shared_ptr<IStatCounter>, std::pair<boost::asio::strand *, std::string> >::iterator
+            for (std::map<boost::shared_ptr<IStatCounter>, std::pair<BOOST_ASIO_STRAND *, std::string> >::iterator
                 ptr(data.begin()), end(data.end()); ptr != end; ++ptr)
             {
                 (*ptr).second.first->get_io_service().post((*ptr).second.first->wrap(
@@ -422,7 +425,7 @@ void RequestInFlight::on_multigetBody()
         {
             std::string name(keys[i].asString());
             boost::shared_ptr<IStatCounter> counter;
-            boost::asio::strand *strand = 0;
+            BOOST_ASIO_STRAND *strand = 0;
             statStore->find(name, counter, strand);
             if (!counter)
             {
@@ -605,7 +608,7 @@ void RequestInFlight::createCountersMatchingResponse(std::string const &pattern,
         {
             comma = true;
         }
-        strm_buffer_ << 
+        strm_buffer_ <<
             "{\"is_leaf\":" << ((*ptr).second.isLeaf ? "true" : "false") <<
             ",\"type\":" << ((*ptr).second.counterType ) <<
             ",\"name\":\"" << js_quote((*ptr).first) << "\"}";
@@ -725,7 +728,7 @@ void RequestInFlight::generateCounterData(
     }
 
     boost::shared_ptr<IStatCounter> statCounter;
-    boost::asio::strand *strand = 0;
+    BOOST_ASIO_STRAND *strand = 0;
 
     storePtr->find(cname, statCounter, strand);
 
@@ -1009,4 +1012,3 @@ void RequestInFlight::on_storeSettingsBody(std::string const &settings)
     ISettingsFactory *sfac = &istat::Env::get<ISettingsFactory>();
     (new SetSettingsWorker(shared_from_this(), sfac))->go(settings);
 }
-

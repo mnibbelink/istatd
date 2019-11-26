@@ -1,4 +1,3 @@
-
 #if !defined(daemon_StatCounter_h)
 #define daemon_StatCounter_h
 
@@ -13,6 +12,9 @@
 #include <boost/asio/strand.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#ifdef BOOST_NEW_STRAND
+#   include <boost/asio/io_context_strand.hpp>
+#endif
 
 class RetentionPolicy;
 
@@ -28,8 +30,8 @@ public:
     virtual void flush(boost::shared_ptr<IStatStore> const &store);
     virtual void forceFlush(boost::shared_ptr<IStatStore> const &store);
     virtual void maybeShiftCollated(time_t t);
-    virtual void select(time_t start, time_t end, bool trailing, std::vector<istat::Bucket> &oBuckets, 
-                        time_t &normalized_start, time_t &normalized_end, time_t &interval, 
+    virtual void select(time_t start, time_t end, bool trailing, std::vector<istat::Bucket> &oBuckets,
+                        time_t &normalized_start, time_t &normalized_end, time_t &interval,
                         size_t max_samples);
 
 
@@ -38,7 +40,7 @@ public:
     boost::shared_ptr<istat::StatFile> pickStatFile(time_t startTime, time_t endTime, time_t &interval);
     boost::shared_ptr<istat::StatFile> pickTrailingStatFile(time_t season, time_t &o_interval, time_t &o_season);
     virtual void normalizeRange(time_t &start, time_t &end, time_t &interval, size_t maxSamples);
-    
+
     friend void run_tests(void);
 
 private:
@@ -59,7 +61,7 @@ private:
         CollationInfo();
         CollationInfo(time_t t);
     };
-    bool isCollated_;   
+    bool isCollated_;
     time_t collationInterval_;
     CollationInfo collations_[BUCKETS_PER_COLLATION_WINDOW];
 

@@ -8,7 +8,7 @@ FakeStatStore::~FakeStatStore() {}
 class FakeStatCounter : public IStatCounter
 {
 public:
-    boost::asio::strand strand_;
+    BOOST_ASIO_STRAND strand_;
     time_t from_, to_, interval_;
     FakeStatStore *fss_;
     std::string name_;
@@ -77,7 +77,7 @@ void FakeStatStore::record(std::string const &name, time_t time, double value, d
     fakeCounters_[name]->record(time, value, valueSq, min, max, cnt);
 }
 
-void FakeStatStore::find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, boost::asio::strand *&strand) {
+void FakeStatStore::find(std::string const &ctr, boost::shared_ptr<IStatCounter> &statCounter, BOOST_ASIO_STRAND *&strand) {
     std::map<std::string, boost::shared_ptr<IStatCounter> >::iterator ptr(fakeCounters_.find(ctr));
     if (ptr == fakeCounters_.end()) {
         return;
